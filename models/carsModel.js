@@ -3,6 +3,11 @@
 const mongoose = require('mongoose')
 
 const carsSchema = mongoose.Schema({
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'User' //user assosiated with Car
+    },
     name: {
         type: String,
         require: (true, 'Name cannot be empty')
