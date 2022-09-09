@@ -1,35 +1,38 @@
+const asyncHandler = require('express-async-handler')
 const Car = require('../models/carsModel')
 
 // @desc   Get All Cars
 // @route  GET /api/v1/cars
 // @access Private
 
-const getCars = async (req, res) => {
-    try {
-        // TODO: add Redis cache 
-        const allCars = await Car.find()
-        res.status(200).json(allCars)
-    } catch (error) {
-        res.status(404).json({ message: error.message })
-    }
-}
+const getCars = asyncHandler(async (req, res) => {
+    // TODO: add Redis cache 
+    const allCars = await Car.find({ user: req.user.id })
+    res.status(200).json(allCars)
+
+})
 
 
 // @desc   Post New Car
 // @route  POST /api/v1/cars
 // @access Private
 
-const postCar = async (req, res) => {
+const postCar = asyncHandler(async (req, res) => {
     // TODO validation
-    const { name, images, type, gasoline, steering, capacity, price } = req.body
-    const newCar = new Car({ name, images, type, gasoline, steering, capacity, price })
-    try {
-        await newCar.save()
-        res.status(201).json(newCar)
-    } catch (error) {
-        res.status(409).json({ message: error.message + 56666 })
-    }
-}
+    const newCar = await Car.create({
+        name: req.body.name,
+        images: req.body.images,
+        type: req.body.type,
+        gasoline: req.body.gasoline,
+        steering: req.body.steering,
+        capacity: req.body.capacity,
+        price: req.body.price,
+        user: req.user.id
+    })
+
+    res.status(201).json(newCar)
+
+})
 
 // @desc   Update Car
 // @route  PUT /api/v1/cars/:id
